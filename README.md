@@ -137,5 +137,72 @@ spec:
         operator: Equal
         value: "true"
 
+```
+
+# 1st place - sub for nodeSelector & Toleration
+```
+# oc explain sub.spec.config.nodeSelector
+KIND:     Subscription
+VERSION:  operators.coreos.com/v1alpha1
+
+FIELD:    nodeSelector <map[string]string>
+
+
+
+# oc explain sub.spec.config.tolerations
+KIND:     Subscription
+VERSION:  operators.coreos.com/v1alpha1
+
+RESOURCE: tolerations <[]Object>
 
 ```
+
+
+# 2nd place - ds for nodeSelector & Toleration
+```
+# oc explain ds.spec.template.spec.nodeSelector
+KIND:     DaemonSet
+VERSION:  apps/v1
+
+FIELD:    nodeSelector <map[string]string>
+
+
+
+# oc explain ds.spec.template.spec.tolerations
+KIND:     DaemonSet
+VERSION:  apps/v1
+
+RESOURCE: tolerations <[]Object>
+
+```
+
+
+# 3rd place - ds for nodeSelector & Toleration
+
+If the changes on ds is overwrite, look for resource
+```
+# oc api-resources | grep -i dns
+dnses                                                     config.openshift.io/v1                        false        DNS
+dnsrecords                                                ingress.operator.openshift.io/v1              true         DNSRecord
+dnses                                                     operator.openshift.io/v1                      false        DNS
+
+# oc explain dnses.operator.openshift.io.spec.nodePlacement.nodeSelector
+KIND:     DNS
+VERSION:  operator.openshift.io/v1
+
+FIELD:    nodeSelector <map[string]string>
+
+
+# oc explain dnses.operator.openshift.io.spec.nodePlacement.tolerations
+KIND:     DNS
+VERSION:  operator.openshift.io/v1
+
+RESOURCE: tolerations <[]Object>
+
+
+# oc get dnses.operator
+NAME      AGE
+default   6d14h
+
+
+
