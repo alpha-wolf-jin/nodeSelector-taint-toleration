@@ -126,4 +126,16 @@ spec:
         key: node-role.kubernetes.io/infra
         operator: Exists
 
+# oc edit ds ingress-canary 
+
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/infra
+        operator: Exists
+      - effect: NoSchedule
+        key: node.ocs.openshift.io/storage
+        operator: Equal
+        value: "true"
+
+
 ```
