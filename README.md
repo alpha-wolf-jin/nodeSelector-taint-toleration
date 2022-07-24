@@ -61,3 +61,69 @@ dns-default
 ```
 
 ```
+
+# Current Label on worker node
+```
+# oc get node
+NAME                        STATUS   ROLES          AGE     VERSION
+aro-k4j2l-master-0          Ready    master         6d13h   v1.23.5+9ce5071
+aro-k4j2l-master-1          Ready    master         6d13h   v1.23.5+9ce5071
+aro-k4j2l-master-2          Ready    master         6d13h   v1.23.5+9ce5071
+aro-k4j2l-worker-eastus-1   Ready    infra,worker   6d13h   v1.23.5+9ce5071
+aro-k4j2l-worker-eastus-2   Ready    infra,worker   6d13h   v1.23.5+9ce5071
+aro-k4j2l-worker-eastus-3   Ready    infra,worker   6d13h   v1.23.5+9ce5071
+
+# oc get node aro-k4j2l-worker-eastus-1 --show-labels
+
+  labels:
+    cluster.ocs.openshift.io/openshift-storage: ""
+    kubernetes.io/hostname: aro-k4j2l-worker-eastus-1
+    kubernetes.io/os: linux
+    node-role.kubernetes.io/infra: ""
+    node-role.kubernetes.io/worker: ""
+
+spec:
+  taints:
+  - effect: NoSchedule
+    key: node.ocs.openshift.io/storage
+    value: "true"
+
+```
+
+# Error on console UI 'Overview'
+
+- 1 Pods of DaemonSet openshift-ingress-canary/ingress-canary are running where they are not supposed to run.
+
+That means the pod runs on some nodes, but without proper toleration.
+```
+# oc project openshift-ingress-canary
+
+# oc get pod -o wide | grep ingress-canary
+ingress-canary-qww5s   1/1     Running   1          2d15h   10.129.2.20   aro-k4j2l-worker-eastus-2   <none>           <none>
+
+# oc get sub
+No resources found in openshift-ingress-canary namespace.
+
+# oc get ds
+NAME             DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR            AGE
+ingress-canary   0         0         0       0            0           kubernetes.io/os=linux   6d14h
+
+$ oc get ds ingress-canary -o yaml
+apiVersion: apps/v1
+kind: DaemonSet
+
+spec:
+  template:
+
+    spec:
+      containers:
+
+      nodeSelector:
+        kubernetes.io/os: linux
+
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/infra
+        operator: Exists
+
+```
