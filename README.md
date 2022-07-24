@@ -33,4 +33,31 @@ Refer to: https://docs.openshift.com/container-platform/4.10/nodes/scheduling/no
 Refer to: https://docs.openshift.com/container-platform/4.10/nodes/scheduling/nodes-scheduler-taints-tolerations.html#nodes-scheduler-taints-tolerations-projects_nodes-scheduler-taints-tolerations
 
 
+**Critical DaemonSets Missing Universal Toleration**
 
+Refer to: https://access.redhat.com/solutions/5061861
+
+machine-config-daemon
+```
+oc patch ds machine-config-daemon -n openshift-machine-config-operator  --type=merge -p '{"spec": {"template": { "spec": {"tolerations":[{"operator":"Exists"}]}}}}'
+```
+
+node-ca
+```
+oc patch ds node-ca -n openshift-image-registry --type=merge -p '{"spec": {"template": { "spec": {"tolerations":[{"operator":"Exists"}]}}}}'
+```
+
+csi-cephfsplugin
+```
+oc patch ds csi-cephfsplugin -n openshift-storage  --type=merge -p '{"spec": {"template": { "spec": {"tolerations":[{"operator":"Exists"}]}}}}'
+```
+
+csi-rbdplugin
+```
+oc patch ds csi-rbdplugin -n openshift-storage  --type=merge -p '{"spec": {"template": { "spec": {"tolerations":[{"operator":"Exists"}]}}}}'
+```
+
+dns-default
+```
+
+```
